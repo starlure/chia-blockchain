@@ -36,9 +36,9 @@ const getScriptPath = () => {
     return path.join( PY_FOLDER, PY_MODULE + '.py')
   }
   if (process.platform === 'win32') {
-    return path.join(PY_DIST_FOLDER, PY_MODULE, PY_MODULE + '.exe')
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + '.exe')
   }
-  return path.join(PY_DIST_FOLDER, PY_MODULE, PY_MODULE)
+  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE)
 }
 
 const selectPort = () => {
@@ -54,7 +54,10 @@ const createPyProc = () => {
     additional_args = ["--testing", local_test]
   }
   if (guessPackaged()) {
+    console.log('guess packed is true: ' + script);
     pyProc = require('child_process').execFile(script, additional_args)
+    console.log('script: ' + script);
+    console.log('additional_args: ' + additional_args);
   } else {
     pyProc = require('child_process').spawn('python', [script].concat(additional_args))
   }
