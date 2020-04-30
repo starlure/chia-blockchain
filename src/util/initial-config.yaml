@@ -48,9 +48,13 @@ farmer:
 # Don't run this unless you want to run VDF clients on the local machine.
 timelord_launcher:
   # The server where the VDF clients will connect to.
-  port: 8000
+  ips:
+    - 127.0.0.1
+  ports: 
+    - 8000
   # Number of VDF client processes to keep alive in the local machine.
-  process_count: 2
+  process_counts: 
+    - 2
   logging: *logging
 
 
@@ -77,6 +81,10 @@ timelord:
     host: 127.0.0.1
     port: 8000
   logging: *logging
+  # If set 'False', timelord will work to extend the top unfinished blocks.
+  # Otherwise, it will work to create simple wesolowski proofs 
+  # for already existing blocks.
+  sanitizer_mode: False
 
   ssl:
     crt: "trusted.crt"

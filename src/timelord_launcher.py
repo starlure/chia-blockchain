@@ -66,9 +66,18 @@ async def spawn_process(host, port, counter):
 
 async def spawn_all_processes(config):
     await asyncio.sleep(15)
-    port = config["port"]
-    process_count = config["process_count"]
-    awaitables = [spawn_process("127.0.0.1", port, i) for i in range(process_count)]
+    ips = config["ips"]
+    ports = config["ports"]
+    process_counts = config["process_counts"]
+    proc_args = [
+        (ips[i], ports[i])
+        for i in range(len(ips))
+        for _ in range(process_counts[i])
+    ]
+    awaitables = [
+        spawn_process(ip, port, counter)
+        for counter, (ip, port) in enumerate(proc_args)
+    ]
     await asyncio.gather(*awaitables)
 
 
