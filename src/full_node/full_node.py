@@ -1001,8 +1001,8 @@ class FullNode:
                 if not respond_compact_proof_of_time.proof.is_valid(
                     self.constants["DISCRIMINANT_SIZE_BITS"]
                 ):
-                    log.info("Invalid compact proof of time.")
-                    return 
+                    self.log.info("Invalid compact proof of time.")
+                    return
                 block_new = FullBlock(
                     block.proof_of_space,
                     respond_compact_proof_of_time.proof,
@@ -1011,7 +1011,7 @@ class FullNode:
                     block.transactions_filter,
                 )
                 await self.block_store.add_block(block_new)
-                log.info(f"Stored compact block at height {block.height}.")
+                self.log.info(f"Stored compact block at height {block.height}.")
                 yield OutboundMessage(
                     NodeType.FULL_NODE,
                     Message(
@@ -1545,7 +1545,7 @@ class FullNode:
                     compact_request
                 ):
                     yield msg
-                return 
+                return
             self.log.warning(
                 f"Received a proof of time that we cannot use to complete a block {dict_key}"
             )
@@ -1566,7 +1566,7 @@ class FullNode:
                 full_node_protocol.RespondBlock(new_full_block)
             ):
                 yield msg
-    
+
     async def broadcast_uncompact_blocks(
         self, delivery: Delivery = Delivery.BROADCAST
     ) -> OutboundMessageGenerator:
@@ -1579,7 +1579,7 @@ class FullNode:
             new_min_height = None
             max_height = self.blockchain.lca_block.height
             uncompact_blocks = 0
-            log.info("Started broadcasting uncompact blocks.")
+            self.log.info("Started broadcasting uncompact blocks.")
 
             for h in range(min_height, max_height):
                 blocks: List[FullBlock] = await self.block_store.get_blocks_at(
@@ -1588,9 +1588,9 @@ class FullNode:
                 for block in blocks:
                     assert block.proof_of_time is not None
                     if block.proof_of_time.witness_type != 0:
-                        challenge_requests = timelord_protocol.ChallengeStart(
+                        challenge_msg = timelord_protocol.ChallengeStart(
                             (
-                                block.proof_of_time.challenge_hash, 
+                                block.proof_of_time.challenge_hash,
                                 block.weight,
                             )
                         )
@@ -1622,7 +1622,7 @@ class FullNode:
                 new_min_height = max(1, max_height - 100)
             min_height = new_min_height
 
-            log.info(f"Broadcasted {uncompact_blocks} uncompact blocks to timelords.")
+            self.log.info(f"Broadcasted {uncompact_blocks} uncompact blocks to timelords.")
             await asyncio.sleep(1800)
 
     @api_request

@@ -310,7 +310,7 @@ class Timelord:
             msg = ""
             try:
                 msg = data.decode()
-            except Exception as e:
+            except Exception:
                 pass
 
             if msg == "STOP":
@@ -479,23 +479,23 @@ class Timelord:
                         yield msg
                     self.proofs_to_write.clear()
             await asyncio.sleep(0.5)
-    
+
     async def _manage_discriminant_queue_sanitizer(self):
         while not self._is_shutdown:
             async with self.lock:
                 if len(self.discriminant_queue) > 0:
                     with_iters = [
-                        (d, w) 
+                        (d, w)
                         for d, w in self.discriminant_queue
                         if d in self.pending_iters
                         and len(self.pending_iters[d]) != 0
                     ]
-                    
+
                     disc = None
                     if len(with_iters) > 0:
                         disc, weight = random.choice(with_iters)
                         if (
-                            self.last_time_seen_discriminant[disc] 
+                            self.last_time_seen_discriminant[disc]
                             < time.time() - 3600
                         ):
                             # Haven't seen 'challenge_start' in over 1 hour
@@ -524,7 +524,6 @@ class Timelord:
                     self.proofs_to_write.clear()
             await asyncio.sleep(3)
 
-
     @api_request
     async def challenge_start(self, challenge_start: timelord_protocol.ChallengeStart):
         """
@@ -541,7 +540,7 @@ class Timelord:
                 return
             if (
                 not self.sanitizer_mode
-                challenge_start.weight <= self.best_weight_three_proofs
+                and challenge_start.weight <= self.best_weight_three_proofs
             ):
                 log.info("Not starting challenge, already three proofs at that weight")
                 return
@@ -595,7 +594,7 @@ class Timelord:
                             log.info("Not storing iter, waiting for more block confirmations.")
                     else:
                         log.info("Not storing iter, challenge inactive.")
-                        return 
+                        return
                 log.info(
                     f"proof_of_space_info {proof_of_space_info.challenge_hash} adding "
                     f"{proof_of_space_info.iterations_needed} to "
