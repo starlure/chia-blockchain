@@ -18,6 +18,9 @@ let amount = document.querySelector("#amount_to_send")
 let table = document.querySelector("#tx_table").getElementsByTagName('tbody')[0]
 let balance_textfield = document.querySelector('#balance_textfield')
 let pending_textfield = document.querySelector('#pending_textfield')
+let available_balance_textfield = document.querySelector('#freespend_balance_textfield')
+let pendrewards_balance_textfield = document.querySelector('#pendrewards_balance_textfield')
+let pendtx_balance_textfield = document.querySelector('#pendtx_balance_textfield')
 let connection_textfield = document.querySelector('#connection_textfield')
 let syncing_textfield = document.querySelector('#syncing_textfield')
 let block_height_textfield = document.querySelector('#block_height_textfield')
@@ -50,7 +53,7 @@ function create_side_wallet(id, href, wallet_name, wallet_description, wallet_am
                 </div>
               </div>
               <div>
-                <p class="text-right" id="${balance_id}">0.00</p>
+                <p class="text-right" id="${balance_id}"><i class="icon ion-md-checkmark"></i> 0.00</p>
                 <p class="text-right" id="${pending_id}"><i class="icon ion-md-lock"></i> 0.00</p>
               </div>
             </a>`
@@ -334,6 +337,11 @@ async function get_wallet_balance(id) {
 
 function get_wallet_balance_response(response) {
     if (response["success"]) {
+        var total_bal =
+        var available_bal =
+        var pend_rewards_bal =
+        var pend_tx_bal =
+
         var confirmed = parseInt(response["confirmed_wallet_balance"])
         var unconfirmed = parseInt(response["unconfirmed_wallet_balance"])
         var pending = confirmed - unconfirmed
@@ -344,11 +352,19 @@ function get_wallet_balance_response(response) {
         chia_pending = chia_formatter(pending, 'mojo').to('chia').toString()
         chia_pending_abs = chia_formatter(Math.abs(pending), 'mojo').to('chia').toString()
 
+        // placeholders
+        chia_available = 10
+        chia_pending_rewards = 1
+        chia_pending_tx = 3
+
         wallet_balance_holder = document.querySelector("#" + "balance_wallet_" + wallet_id )
         wallet_pending_holder = document.querySelector("#" + "pending_wallet_" + wallet_id )
 
         if (g_wallet_id == wallet_id) {
             balance_textfield.innerHTML = chia_confirmed + " CH"
+            available_balance_textfield.innerHTML = chia_available + " CH"
+            pendrewards_balance_textfield.innerHTML = lock + chia_pending_rewards + " CH"
+            pendtx_balance_textfield.innerHTML = lock + chia_pending_tx + "CH"
             if (pending > 0) {
                 pending_textfield.innerHTML = lock + " - " + chia_pending + " CH"
             } else {

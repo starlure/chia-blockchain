@@ -55,7 +55,7 @@
                 </div>
               </div>
               <div>
-                <h3 class="text-right" id="balance_wallet_id_1">0.00</h3>
+                <p class="text-right" id="balance_wallet_id_1"><i class="icon ion-md-checkmark"></i>0.00</p>
                 <p class="text-right" id="pending_wallet_id_1"><i class="icon ion-md-lock"></i> 0.00</p>
               </div>
             </a>
@@ -106,12 +106,41 @@
                 <li class="d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
                     <i class="icon ion-md-checkmark"></i>
+                    <h2>Available To Spend</h2>
+                  </div>
+                  <div>
+                    <h3 id="available_balance_textfield">0 CH</h3>
+                  </div>
+                </li>
+                <li class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <i class="icon ion-md-gift"></i>
+                    <h2>Pending Farming Rewards</h2>
+                  </div>
+                  <div>
+                    <h3 id="pendrewards_balance_textfield"><i class="icon ion-md-lock"></i>0 CH</h3>
+                  </div>
+                </li>
+                <li class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <i class="icon ion-md-paper-plane"></i>
+                    <h2>Pending Transaction Spends</h2>
+                  </div>
+                  <div>
+                    <h3 id="pendtx_balance_textfield"><i class="icon ion-md-lock"></i>0 CH</h3>
+                  </div>
+                </li>
+                <!--
+                <li class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <i class="icon ion-md-checkmark"></i>
                     <h2>Pending Transactions</h2>
                   </div>
                   <div>
                     <h3 id="pending_textfield">0 CH</h3>
                   </div>
                 </li>
+              -->
               </ul>
               <div class="wallet-address">
                 <p>Recipient Address:</p>

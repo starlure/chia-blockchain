@@ -1378,7 +1378,7 @@ tbody.ob-heading {
 .wallet .tab-content li i {
   font-size: 22px;
   color: #0f7dff;
-  background: rgba(15, 125, 255, 0.13);
+  /* background: rgba(15, 125, 255, 0.13); */
   width: 40px;
   height: 40px;
   border-radius: 50px;
@@ -2312,4 +2312,8 @@ table td {
    white-space: -pre-wrap;     /* Opera <7 */
    white-space: -o-pre-wrap;   /* Opera 7 */
    word-wrap: break-word;      /* IE */
+}
+
+.hide-item {
+  opacity: 0;
 }
