@@ -163,7 +163,7 @@ class Blockchain:
                 ] = full_block.height
             else:
                 log.error("Can't retrieve block from memory by header hash.")
-            
+
             if cur_b.height == 0:
                 break
             cur_b = headers_db[cur_b.prev_header_hash]

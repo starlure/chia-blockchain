@@ -1538,7 +1538,7 @@ class FullNode:
                 compact_request
             ):
                 yield msg
-                
+
         dict_key = (
             request.proof.challenge_hash,
             request.proof.number_of_iterations,
@@ -1592,7 +1592,7 @@ class FullNode:
                     assert block.proof_of_time is not None
                     if block.header_hash not in self.blockchain.headers:
                         continue
-                       
+
                     if block.proof_of_time.witness_type != 0:
                         challenge_msg = timelord_protocol.ChallengeStart(
                             block.proof_of_time.challenge_hash,
