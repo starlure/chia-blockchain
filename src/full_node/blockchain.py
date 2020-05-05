@@ -105,6 +105,7 @@ class Blockchain:
         self.block_store = block_store
         self.genesis = FullBlock.from_bytes(self.constants["GENESIS_BLOCK"])
         self.coinbase_freeze = self.constants["COINBASE_FREEZE_PERIOD"]
+        self.pot_to_chain_height = {}
         await self._load_chain_from_store()
         return self
 
@@ -149,6 +150,20 @@ class Blockchain:
         while True:
             self.headers[cur_b.header_hash] = cur_b
             self.height_to_hash[cur_b.height] = cur_b.header_hash
+            full_block: FullBlock = await self.block_store.get_block(
+                cur_b.header_hash
+            )
+            if full_block is not None:
+                assert full_block.proof_of_time is not None
+                self.pot_to_chain_height[
+                    (
+                        full_block.proof_of_time.challenge_hash,
+                        full_block.proof_of_time.number_of_iterations,
+                    )
+                ] = full_block.height
+            else:
+                log.error("Can't retrieve block from memory by header hash.")
+            
             if cur_b.height == 0:
                 break
             cur_b = headers_db[cur_b.prev_header_hash]
@@ -527,6 +542,12 @@ class Blockchain:
 
         # Always immediately add the block to the database, after updating blockchain state
         await self.block_store.add_block(block)
+        self.pot_to_chain_height[
+            (
+                block.proof_of_time.challenge_hash,
+                block.proof_of_time.number_of_iterations,
+            )
+        ] = block.height
         res, header = await self._reconsider_heads(block.header, genesis, sync_mode)
         if res:
             return ReceiveBlockResult.ADDED_TO_HEAD, header, None
