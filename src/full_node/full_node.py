@@ -1586,7 +1586,7 @@ class FullNode:
 
             for h in range(min_height, max_height):
                 blocks: List[FullBlock] = await self.block_store.get_blocks_at(
-                    [h]
+                    [uint32(h)]
                 )
                 for block in blocks:
                     assert block.proof_of_time is not None
@@ -1603,21 +1603,22 @@ class FullNode:
                             block.proof_of_time.number_of_iterations,
                         )
 
-                        self.server.push_message(
-                            OutboundMessage(
-                                NodeType.TIMELORD,
-                                Message("challenge_start", challenge_msg),
-                                delivery,
+                        if self.server is not None:
+                            self.server.push_message(
+                                OutboundMessage(
+                                    NodeType.TIMELORD,
+                                    Message("challenge_start", challenge_msg),
+                                    delivery,
+                                )
                             )
-                        )
-                        self.server.push_message(
-                            OutboundMessage(
-                                NodeType.TIMELORD,
-                                Message("proof_of_space_info", pos_info_msg),
-                                delivery,
+                            self.server.push_message(
+                                OutboundMessage(
+                                    NodeType.TIMELORD,
+                                    Message("proof_of_space_info", pos_info_msg),
+                                    delivery,
+                                )
                             )
-                        )
-                        self.log.info(f"Submitted block at height {h}")
+                        # self.log.info(f"Submitted block at height {h}")
                         if (
                             uncompact_blocks == 0
                             and h <= max(1, max_height - 100)
