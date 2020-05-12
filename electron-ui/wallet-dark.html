@@ -55,8 +55,8 @@
                 </div>
               </div>
               <div>
-                <p class="text-right" id="balance_wallet_id_1"><i class="icon ion-md-checkmark"></i>0.00</p>
-                <p class="text-right" id="pending_wallet_id_1"><i class="icon ion-md-lock"></i> 0.00</p>
+                <h3 class="text-right" id="balance_wallet_id_1">0.00</h3>
+                <p class="text-right" id="avail_wallet_id_1"><i class="icon ion-md-checkmark"></i> 0.00</p>
               </div>
             </a>
             <a class="nav-link d-flex justify-content-between align-items-center" data-toggle="pill" href="./create_wallet.html"
@@ -114,34 +114,20 @@
                 </li>
                 <li class="d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
-                    <i class="icon ion-md-gift"></i>
-                    <h2>Pending Farming Rewards</h2>
+                    <i class="icon ion-md-hourglass"></i>
+                    <h2>Pending Balance</h2>
                   </div>
                   <div>
-                    <h3 id="pendrewards_balance_textfield"><i class="icon ion-md-lock"></i>0 CH</h3>
+                    <h3 id="pending_balance_textfield"><i class="icon ion-md-lock"></i>0 CH</h3>
                   </div>
                 </li>
-                <li class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center">
-                    <i class="icon ion-md-paper-plane"></i>
-                    <h2>Pending Transaction Spends</h2>
-                  </div>
-                  <div>
-                    <h3 id="pendtx_balance_textfield"><i class="icon ion-md-lock"></i>0 CH</h3>
-                  </div>
+                <li>
+                    <button class="button locklist" id="locklist_button"><i class="icon ion-md-menu"></i>&nbsp;&nbsp;</button>
+                    <div class="locklistcontent" id="locklist_textfield">
+                    </div>
                 </li>
-                <!--
-                <li class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center">
-                    <i class="icon ion-md-checkmark"></i>
-                    <h2>Pending Transactions</h2>
-                  </div>
-                  <div>
-                    <h3 id="pending_textfield">0 CH</h3>
-                  </div>
-                </li>
-              -->
               </ul>
+              
               <div class="wallet-address">
                 <p>Recipient Address:</p>
               <div class="input-group" style="padding-top:0px">

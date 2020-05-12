@@ -38,6 +38,7 @@ let offer_items = document.querySelector('#offer_items')
 const green_checkmark = "<i class=\"icon ion-md-checkmark-circle-outline green\"></i>"
 const red_checkmark = "<i class=\"icon ion-md-close-circle-outline red\"></i>"
 const lock = "<i class=\"icon ion-md-lock\"></i>"
+const checkmark = "<i class=\"icon ion-md-checkmark\"></i>"
 
 // Global variables
 var global_syncing = true
@@ -48,7 +49,7 @@ var wallets_details = {}
 
 function create_side_wallet(id, href, wallet_name, wallet_description, wallet_amount, active) {
     var balance_id = "balance_wallet_" + id
-    var pending_id = "pending_wallet_" + id
+    var avail_id = "avail_wallet_" + id
     var is_active = active ? "active" : "";
     href += "?wallet_id=" + id + "&testing=" + local_test
     const template = `<a class="nav-link d-flex justify-content-between align-items-center ${is_active}" data-toggle="pill"
@@ -62,7 +63,7 @@ function create_side_wallet(id, href, wallet_name, wallet_description, wallet_am
               </div>
               <div>
                 <p class="text-right" id="${balance_id}">0.00</p>
-                <p class="text-right" id="${pending_id}"><i class="icon ion-md-lock"></i> 0.00</p>
+                <p class="text-right" id="${avail_id}"><i class="icon ion-md-checkmark"></i> 0.00</p>
               </div>
             </a>`
     return template
@@ -212,30 +213,44 @@ async function get_wallet_balance(id) {
 }
 
 function get_wallet_balance_response(response) {
-    if (response["success"]) {
-        var confirmed = parseInt(response["confirmed_wallet_balance"])
-        var unconfirmed = parseInt(response["unconfirmed_wallet_balance"])
-        var pending = confirmed - unconfirmed
-        var wallet_id = response["wallet_id"]
+  if (response["success"]) {
+      // total amount of coins
+      var confirmed_bal = parseInt(response["confirmed_wallet_balance"])
+      // total amount - coins that are removed in transaction + coins that are added in transaction (change)
+      var unconfirmed_bal = parseInt(response["unconfirmed_wallet_balance"])
+      // total amount - coins locked in transactions - coins that are frozen
+      var spendable_bal = parseInt(response["spendable_balance"])
+      // coins that are still in coinbase freeze
+      var frozen_bal = parseInt(response["frozen_balance"])
+      // total amount - coins that are removed in transaction
+      var pend_tx_bal = parseInt(response["pending_tx_balance"])
 
-        chia_confirmed = chia_formatter(confirmed, 'mojo').to('chia').toString()
-        chia_pending = chia_formatter(pending, 'mojo').to('chia').toString()
-        chia_pending_abs = chia_formatter(Math.abs(pending), 'mojo').to('chia').toString()
+      var pendspends = confirmed_bal - unconfirmed_bal
+      var change = pend_tx_bal
 
-        wallet_balance_holder = document.querySelector("#" + "balance_wallet_" + wallet_id )
-        wallet_pending_holder = document.querySelector("#" + "pending_wallet_" + wallet_id )
+      var wallet_id = response["wallet_id"]
+      console.log("wallet_id = " + wallet_id + ", total: " + confirmed_bal + ", unconfirmed: " + unconfirmed_bal + ", spendable: " + spendable_bal + ", pending rewards: " + frozen_bal + ", pending tx spends: " + pend_tx_bal)
 
-        if (wallet_balance_holder) {
-            wallet_balance_holder.innerHTML = chia_confirmed.toString() + " CH"
+      chia_confirmed = chia_formatter(confirmed_bal, 'mojo').to('chia').toString()
+      chia_spendable = chia_formatter(spendable_bal, 'mojo').to('chia').toString()
+
+      wallet_balance_holder = document.querySelector("#" + "balance_wallet_" + wallet_id )
+      wallet_avail_holder = document.querySelector("#" + "avail_wallet_" + wallet_id )
+
+      if (wallet_balance_holder) {
+          wallet_balance_holder.innerHTML = chia_confirmed.toString() + " CH"
+      }
+      if (wallet_avail_holder) {
+        console.log("TEST 1")
+        if (chia_spendable < 0) {
+          console.log("TEST 2")
+          wallet_avail_holder.innerHTML = checkmark + " 0 CH"
+        } else {
+          console.log("TEST 3")
+          wallet_avail_holder.innerHTML = checkmark + " " + chia_spendable.toString() + " CH"
         }
-        if (wallet_pending_holder) {
-            if (pending > 0) {
-                wallet_pending_holder.innerHTML = lock + " - " + chia_pending + " CH"
-            } else {
-                wallet_pending_holder.innerHTML = lock + " " + chia_pending_abs + " CH"
-            }
-        }
-    }
+      }
+  }
 }
 
 var glob_counter = 0

@@ -26,6 +26,8 @@ let offer_view = document.querySelector('#offer_view')
 let print_zero = document.querySelector('#print_zero')
 let balance_textfield = document.querySelector('#balance_textfield')
 let pending_textfield = document.querySelector('#pending_textfield')
+let available_balance_textfield = document.querySelector('#available_balance_textfield')
+let pending_balance_textfield = document.querySelector('#pending_balance_textfield')
 let connection_textfield = document.querySelector('#connection_textfield')
 let syncing_textfield = document.querySelector('#syncing_textfield')
 let block_height_textfield = document.querySelector('#block_height_textfield')
@@ -37,6 +39,7 @@ let table = document.querySelector("#tx_table").getElementsByTagName('tbody')[0]
 const green_checkmark = "<i class=\"icon ion-md-checkmark-circle-outline green\"></i>"
 const red_checkmark = "<i class=\"icon ion-md-close-circle-outline red\"></i>"
 const lock = "<i class=\"icon ion-md-lock\"></i>"
+const checkmark = "<i class=\"icon ion-md-checkmark\"></i>"
 
 // Global variables
 var global_syncing = true
@@ -55,7 +58,7 @@ console.log("wallet_id: " + g_wallet_id)
 
 function create_side_wallet(id, href, wallet_name, wallet_description, wallet_amount, active) {
     var balance_id = "balance_wallet_" + id
-    var pending_id = "pending_wallet_" + id
+    var avail_id = "avail_wallet_" + id
     var is_active = active ? "active" : "";
     href += "?wallet_id=" + id + "&testing=" + local_test
     const template = `<a class="nav-link d-flex justify-content-between align-items-center ${is_active}" data-toggle="pill"
@@ -69,7 +72,7 @@ function create_side_wallet(id, href, wallet_name, wallet_description, wallet_am
               </div>
               <div>
                 <p class="text-right" id="${balance_id}">0.00</p>
-                <p class="text-right" id="${pending_id}"><i class="icon ion-md-lock"></i> 0.00</p>
+                <p class="text-right" id="${avail_id}"><i class="icon ion-md-checkmark"></i> 0.00</p>
               </div>
             </a>`
     return template
@@ -249,36 +252,61 @@ async function get_wallet_balance(id) {
 
 function get_wallet_balance_response(response) {
     if (response["success"]) {
-        var confirmed = parseInt(response["confirmed_wallet_balance"])
-        var unconfirmed = parseInt(response["unconfirmed_wallet_balance"])
-        var pending = confirmed - unconfirmed
+        // total amount of coins
+        var confirmed_bal = parseInt(response["confirmed_wallet_balance"])
+        // total amount - coins that are removed in transaction + coins that are added in transaction (change)
+        var unconfirmed_bal = parseInt(response["unconfirmed_wallet_balance"])
+        // total amount - coins locked in transactions - coins that are frozen
+        var spendable_bal = parseInt(response["spendable_balance"])
+        // coins that are still in coinbase freeze
+        var frozen_bal = parseInt(response["frozen_balance"])
+        // total amount - coins that are removed in transaction
+        var pend_tx_bal = parseInt(response["pending_tx_balance"])
+
+        var pendspends = confirmed_bal - unconfirmed_bal
+        var change = pend_tx_bal
 
         var wallet_id = response["wallet_id"]
-        console.log("wallet_id = " + wallet_id + "confirmed: " + confirmed + "unconfirmed: " + unconfirmed )
-        chia_confirmed = chia_formatter(confirmed, 'mojo').to('chia').toString()
-        chia_pending = chia_formatter(pending, 'mojo').to('chia').toString()
-        chia_pending_abs = chia_formatter(Math.abs(pending), 'mojo').to('chia').toString()
+        console.log("wallet_id = " + wallet_id + ", total: " + confirmed_bal + ", unconfirmed: " + unconfirmed_bal + ", spendable: " + spendable_bal + ", pending rewards: " + frozen_bal + ", pending tx spends: " + pend_tx_bal)
+
+        chia_confirmed = chia_formatter(confirmed_bal, 'mojo').to('chia').toString()
+        chia_unconfirmed = chia_formatter(unconfirmed_bal, 'mojo').to('chia').toString()
+        chia_spendable = chia_formatter(spendable_bal, 'mojo').to('chia').toString()
+        chia_frozen = chia_formatter(frozen_bal, 'mojo').to('chia').toString()
+        chia_change = chia_formatter(change, 'mojo').to('chia').toString()
+        chia_pendspends = chia_formatter(pendspends, 'mojo').to('chia').toString()
+
+        chia_pendspends = -1 * chia_pendspends
 
         wallet_balance_holder = document.querySelector("#" + "balance_wallet_" + wallet_id )
-        wallet_pending_holder = document.querySelector("#" + "pending_wallet_" + wallet_id )
+        wallet_avail_holder = document.querySelector("#" + "avail_wallet_" + wallet_id )
+
+        if (g_wallet_id == wallet_id) {
+          pending_balances = {"rewards": chia_frozen, "spends": chia_pendspends, "change": chia_change}
+        }
+
+        wallet_balance_holder = document.querySelector("#" + "balance_wallet_" + wallet_id )
+        wallet_avail_holder = document.querySelector("#" + "avail_wallet_" + wallet_id )
 
         if (g_wallet_id == wallet_id) {
             balance_textfield.innerHTML = chia_confirmed + " CH"
-            if (pending > 0) {
-                pending_textfield.innerHTML = lock + " - " + chia_pending + " CH"
+            if (chia_spendable < 0) {
+              available_balance_textfield.innerHTML = "0 CH"
             } else {
-                pending_textfield.innerHTML = lock + " " + chia_pending_abs + " CH"
+              available_balance_textfield.innerHTML = chia_spendable + " CH"
             }
-        }
+            pending_balance_textfield.innerHTML = lock + chia_unconfirmed + " CH"
+          }
+
         if (wallet_balance_holder) {
             wallet_balance_holder.innerHTML = chia_confirmed.toString() + " CH"
         }
-        if (wallet_pending_holder) {
-            if (pending > 0) {
-                wallet_pending_holder.innerHTML = lock + " - " + chia_pending + " CH"
-            } else {
-                wallet_pending_holder.innerHTML = lock + " " + chia_pending_abs + " CH"
-            }
+        if (wallet_avail_holder) {
+          if (chia_spendable < 0) {
+            wallet_avail_holder.innerHTML = checkmark + " 0 CH"
+          } else {
+            wallet_avail_holder.innerHTML = checkmark + " " + chia_spendable.toString() + " CH"
+          }
         }
     }
 }
@@ -670,6 +698,66 @@ function get_transactions_response(response) {
         var fee = parseInt(tx["fee_amount"])
         cell_amount.innerHTML = " " + chia_formatter(amount, 'mojo').to('chia').toString() + " CH"
         cell_fee.innerHTML = " " + chia_formatter(fee, 'mojo').to('chia').toString() + " CH"
+    }
+}
+
+locklist_button.addEventListener('click', function() {
+    /*
+    Called when locklist button in ui is pressed.
+    */
+
+    get_wallet_balance(g_wallet_id)
+    rewards = pending_balances["rewards"]
+    spends = pending_balances["spends"]
+    change = pending_balances["change"]
+    locklist_textfield.innerHTML = `<ul>
+    <li class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="icon ion-md-gift"></i>
+        <h2>Pending Farming Rewards</h2>
+      </div>
+      <div>
+        <h3><i class="icon ion-md-lock"></i>${rewards} CH</h3>
+      </div>
+    </li>
+    <li class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="icon ion-md-paper-plane"></i>
+        <h2>Pending From Transactions</h2>
+      </div>
+      <div>
+        <h3><i class="icon ion-md-lock"></i>${spends} CH</h3>
+      </div>
+    </li>
+    <li class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="icon ion-md-return-left"></i>
+        <h2>Pending Transaction Change</h2>
+      </div>
+      <div>
+        <h3><i class="icon ion-md-lock"></i>${change} CH</h3>
+      </div>
+    </li>
+    </ul>`
+
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+    if (content.style.maxHeight) {
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+    this.classList.toggle("active");
+  }
+)
+
+function clean_table() {
+    while (table.rows.length > 0) {
+        table.deleteRow(0);
     }
 }
 

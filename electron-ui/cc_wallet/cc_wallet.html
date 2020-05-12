@@ -55,8 +55,8 @@
                 </div>
               </div>
               <div>
-                <h3 class="text-right" id="balance_wallet_id_1">0.00</h3>
-                <p class="text-right" id="pending_wallet_id_1"><i class="icon ion-md-lock"></i> 0.00</p>
+                <h3 class="text-right" id="balance_wallet_id_1"> 0.00</h3>
+                <p class="text-right" id="avail_wallet_id_1"><i class="icon ion-md-checkmark"></i> 0.00</p>
               </div>
             </a>
             <a class="nav-link d-flex justify-content-between align-items-center" data-toggle="pill" href="../create_wallet.html"
@@ -91,7 +91,7 @@
         </div>
         <div class="col-md-12 col-lg-8">
           <div class="tab-content">
-            <div class="tab-pane fade show active" id="coinBTC" role="tabpanel">
+            <div class="tab-pane fade show active" role="tabpanel">
               <h2 class="wallet-title">Balances</h2>
               <ul>
                 <li class="d-flex justify-content-between align-items-center">
@@ -106,36 +106,29 @@
                 <li class="d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
                     <i class="icon ion-md-checkmark"></i>
-                    <h2>Pending Transactions</h2>
+                    <h2>Coloured Coin Available To Spend</h2>
                   </div>
                   <div>
-                    <h3 id="pending_textfield">0 CH</h3>
+                    <h3 id="available_balance_textfield">0 CH</h3>
                   </div>
+                </li>
+                <li class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <i class="icon ion-md-hourglass"></i>
+                    <h2>Pending Balance</h2>
+                  </div>
+                  <div>
+                    <h3 id="pending_balance_textfield"><i class="icon ion-md-lock"></i>0 CH</h3>
+                  </div>
+                </li>
+                <li>
+                    <button class="button locklist" id="locklist_button"><i class="icon ion-md-menu"></i>&nbsp;&nbsp;</button>
+                    <div class="locklistcontent" id="locklist_textfield">
+                    </div>
                 </li>
               </ul>
 
-              <!--
               <div class="wallet-address">
-                <div class="row">
-                  <div class="col-md-8">
-                    <h4>Print 0-valued coloured coin(s)</h4>
-                    <div class="input-group">
-                      <input type="text" class="form-control" id="puzzle_holder" value="">
-                      <div class="input-group-prepend">
-                        <button class="btn btn-primary" id="copy" >COPY</button>
-                      </div>
-                    </div>
-                    <div class="input-group">
-                    <button class="btn green" style="padding-top:20px;" id="new_address">NEW ADDRESS</button>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <canvas id="qr_canvas" width="300" height="300"></canvas>
-                  </div>
-                </div>
-              </div>
-            -->
-            <div class="wallet-address">
               <div class="row">
                 <div class="col-md-8">
                   <h4>Colour Info</h4>

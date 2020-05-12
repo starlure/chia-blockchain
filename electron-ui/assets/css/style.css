@@ -1403,6 +1403,12 @@ tbody.ob-heading {
   margin-bottom: 15px;
 }
 
+.wallet .tab-content li li:first-child {
+  border-bottom: none;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+
 .wallet .tab-content button.green {
   background: #3aac59;
   color: #ffffff;
@@ -1436,6 +1442,25 @@ tbody.ob-heading {
   margin-right: 10px;
 }
 
+.wallet .tab-content button.locklist {
+  padding: 0px 0px 0px 12px;
+  margin-right: 10px;
+  outline: none;
+}
+
+.wallet .tab-content button.locklist:after {
+  content: "Show additional balances...";
+}
+
+.wallet .tab-content button.locklist.active:after {
+  content: "Hide additional balances";
+}
+
+.wallet .tab-content button.locklist:hover {
+  background-image: none !important;
+  background-color: #2a2e39 !important;
+}
+
 .wallet .tab-content button:focus {
   -webkit-box-shadow: none;
           box-shadow: none;
@@ -1443,6 +1468,10 @@ tbody.ob-heading {
 
 .wallet .tab-content ul {
   margin: 35px 0 40px;
+}
+
+.wallet .tab-content ul ul {
+  margin: 0px;
 }
 
 .wallet-address {
@@ -1876,6 +1905,10 @@ tbody.ob-heading {
 
 #dark .wallet .tab-content li:first-child {
   border-bottom: 1px solid #2a2e39;
+}
+
+#dark .wallet .tab-content li li:first-child {
+  border-bottom: none;
 }
 
 #dark .wallet tr {
@@ -2314,6 +2347,25 @@ table td {
    word-wrap: break-word;      /* IE */
 }
 
-.hide-item {
-  opacity: 0;
+.locklist {
+  background-color: transparent;
+  color: #0f7dff;
+  cursor: pointer;
+  padding: 0px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 18px;
 }
+
+.locklistcontent {
+  padding: 0px;
+  display: none;
+  background-color: transparent;
+  color: "#ffffff";
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
