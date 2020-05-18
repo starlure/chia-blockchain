@@ -252,7 +252,7 @@ class Timelord:
     async def _do_process_communication(
         self, challenge_hash, challenge_weight, ip, reader, writer
     ):
-        if self.config["fast_algorithm"] == True:
+        if self.config["fast_algorithm"]:
             # Run n-wesolowski algorithm.
             writer.write(b"N")
         else:
@@ -307,8 +307,7 @@ class Timelord:
             msg = ""
             try:
                 msg = data.decode()
-            except Exception as e:
-                log.error(f"Exception while decoding data {e}")
+            except Exception:
                 pass
 
             if msg == "STOP":
