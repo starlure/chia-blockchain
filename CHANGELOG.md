@@ -10,6 +10,8 @@ and this project does not yet adhere to [Semantic Versioning](https://semver.org
 - We added [lgtm](https://lgtm.com/) source analysis on pull request to the chia-blockchain, chiapos, chiavdf, chiabip158, and bls-library repositories to add some automated security analysis to our ci.
 - We added total network storage space estimation to the node RPC at the get_network_space endpoint.
 The endpoint estimates space between any two block header hashes.
+- We added a new type of timelord, which is able to generate n-wesolowski proofs almost immediately,
+after the VDF result is calculated. This increases the estimated IPS to 160K+.
 
 ### Changed
 - `chia netspace` has been refactored to use the get_network_space RPC. The command

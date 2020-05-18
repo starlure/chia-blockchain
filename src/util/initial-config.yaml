@@ -77,6 +77,8 @@ timelord:
     host: 127.0.0.1
     port: 8000
   logging: *logging
+  # Set 'True' if clients connecting to this timelord have a high number of CPUs.
+  fast_algorithm: False
 
   ssl:
     crt: "trusted.crt"

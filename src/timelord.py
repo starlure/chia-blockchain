@@ -14,7 +14,7 @@ from src.types.peer_info import PeerInfo
 from src.types.proof_of_time import ProofOfTime
 from src.types.sized_bytes import bytes32
 from src.util.api_decorators import api_request
-from src.util.ints import uint64, int512, uint128
+from src.util.ints import uint8, uint64, int512, uint128
 
 log = logging.getLogger(__name__)
 
@@ -252,6 +252,13 @@ class Timelord:
     async def _do_process_communication(
         self, challenge_hash, challenge_weight, ip, reader, writer
     ):
+        if self.config["fast_algorithm"] == True:
+            # Run n-wesolowski algorithm.
+            writer.write(b"N")
+        else:
+            # Run two-wesolowski algorithm.
+            writer.write(b"T")
+        await writer.drain()
         disc: int = create_discriminant(
             challenge_hash, self.constants["DISCRIMINANT_SIZE_BITS"]
         )
@@ -341,7 +348,9 @@ class Timelord:
                 y_size = uint64(int.from_bytes(y_size_bytes, "big", signed=True))
 
                 y_bytes = stdout_bytes_io.read(y_size)
-
+                witness_type = uint8(
+                    int.from_bytes(stdout_bytes_io.read(1), "big", signed=True)
+                )
                 proof_bytes: bytes = stdout_bytes_io.read()
 
                 # Verifies our own proof just in case
@@ -354,7 +363,7 @@ class Timelord:
                     challenge_hash,
                     iterations_needed,
                     output,
-                    self.config["n_wesolowski"],
+                    witness_type,
                     proof_bytes,
                 )
 
