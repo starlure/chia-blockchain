@@ -283,15 +283,21 @@ const BalanceCard = (props) => {
   const balance = useSelector(
     (state) => state.wallet_state.wallets[id].balance_total
   );
+  const balance_total_chia = mojo_to_chia_string(balance);
   const balance_spendable = useSelector(
     (state) => state.wallet_state.wallets[id].balance_spendable
   );
+  var balance_spendable_chia = mojo_to_chia_string(balance_spendable, "mojo");
+  if (balance_spendable_chia < 0) {
+    balance_spendable_chia = 0;
+  }
   const balance_pending = useSelector(
     (state) => state.wallet_state.wallets[id].balance_pending
   );
   const balance_change = useSelector(
     (state) => state.wallet_state.wallets[id].balance_change
   );
+  const balance_ptotal = balance + balance_pending + balance_change;
 
   const balancebox_1 = "<table width='100%'>";
   const balancebox_2 = "<tr><td align='left'>";
@@ -299,13 +305,25 @@ const BalanceCard = (props) => {
   const balancebox_4 = "</td></tr>";
   const balancebox_row = "<tr height='8px'></tr>";
   const balancebox_5 = "</td></tr></table>";
-  const balancebox_pending = "Pending Total Balance";
+  const balancebox_ptotal = "Pending Total Balance";
+  const balancebox_pending = "Pending Transactions";
   const balancebox_change = "Pending Change";
   const balancebox_xch = " XCH";
-  const balance_pending_chia = mojo_to_chia_string(balance_pending);
-  const balance_change_chia = mojo_to_chia_string(balance_change);
+  const balancebox_hline =
+    "<tr><td colspan='2' style='text-align:center'><hr></td></tr>";
+  const balance_ptotal_chia = mojo_to_chia_string(balance_ptotal, "mojo");
+  const balance_pending_chia = mojo_to_chia_string(balance_pending, "mojo");
+  const balance_change_chia = mojo_to_chia_string(balance_change, "mojo");
   const acc_content =
     balancebox_1 +
+    balancebox_2 +
+    balancebox_ptotal +
+    balancebox_3 +
+    balance_ptotal_chia +
+    balancebox_xch +
+    balancebox_hline +
+    balancebox_4 +
+    balancebox_row +
     balancebox_2 +
     balancebox_pending +
     balancebox_3 +
@@ -345,7 +363,7 @@ const BalanceCard = (props) => {
                   component="subtitle1"
                   variant="subtitle1"
                 >
-                  {mojo_to_chia_string(balance)} XCH
+                  {balance_total_chia} XCH
                 </Typography>
               </Box>
             </Box>
@@ -365,7 +383,7 @@ const BalanceCard = (props) => {
                   component="subtitle1"
                   variant="subtitle1"
                 >
-                  {mojo_to_chia_string(balance_spendable, "mojo")} XCH
+                  {balance_spendable_chia} XCH
                 </Typography>
               </Box>
             </Box>

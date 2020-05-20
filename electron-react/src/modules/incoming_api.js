@@ -105,14 +105,20 @@ export const incomingReducer = (state = { ...initial_state }, action) => {
           var balance = action.data.confirmed_wallet_balance;
           console.log("balance is: " + balance);
           var unconfirmed_balance = action.data.unconfirmed_wallet_balance;
+          var pending_balance = unconfirmed_balance - balance;
           var frozen_balance = action.data.frozen_balance;
           var spendable_balance = action.data.spendable_balance;
-          var change_balance = action.data.change_balance;
+          var change_balance = action.data.pending_change;
           wallet.balance_total = balance;
-          wallet.balance_pending = unconfirmed_balance;
+          console.log("; total balance is: " + balance);
+          wallet.balance_pending = pending_balance;
+          console.log("; unconfirmed balance is: " + pending_balance);
           wallet.balance_frozen = frozen_balance;
+          console.log("; frozen balance is: " + frozen_balance);
           wallet.balance_spendable = spendable_balance;
+          console.log("; spendable balance is: " + spendable_balance);
           wallet.balance_change = change_balance;
+          console.log("; change balance is: " + change_balance);
           return state;
         }
       } else if (action.command === "get_transactions") {
