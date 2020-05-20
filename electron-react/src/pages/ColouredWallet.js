@@ -310,7 +310,7 @@ const BalanceCard = (props) => {
   const balancebox_change = "Pending Change";
   const balancebox_xch = " XCH";
   const balancebox_hline =
-    "<tr><td colspan='2' style='text-align:center'><hr></td></tr>";
+    "<tr><td colspan='2' style='text-align:center'><hr width='50%'></td></tr>";
   const balance_ptotal_chia = mojo_to_chia_string(balance_ptotal, "mojo");
   const balance_pending_chia = mojo_to_chia_string(balance_pending, "mojo");
   const balance_change_chia = mojo_to_chia_string(balance_change, "mojo");
